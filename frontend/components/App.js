@@ -40,6 +40,7 @@ export default function App() {
   const [errors, setErrors] = useState(getInitialErrors())
   const [serverSuccess, setServerSuccess] = useState()
   const [serverFailure, setServerFailure] = useState()
+  const [formEnabled, setFormEnabled] = useState(false)
   // ✨ TASK: BUILD YOUR STATES HERE
   // You will need states to track (1) the form, (2) the validation errors,
   // (3) whether submit is disabled, (4) the success message from the server,
@@ -60,6 +61,11 @@ export default function App() {
     axios.post('https://webapis.bloomtechdev.com/registration', values)
     .then(res => {
       setServerSuccess(res.data.message)
+      setServerFailure()
+    })
+    .catch(err => {
+      setServerFailure(err.response.data.message)
+      setServerSuccess()
     })
   }
 
@@ -111,7 +117,7 @@ export default function App() {
         </div>
 
         <div>
-          <input type="submit" disabled={false} />
+          <input disabled={!formEnabled} type="submit"/>
         </div>
       </form>
     </div>
