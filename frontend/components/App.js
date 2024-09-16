@@ -56,12 +56,11 @@ export default function App() {
   }
 
   const onSubmit = evt => {
-    // ✨ TASK: IMPLEMENT YOUR SUBMIT HANDLER
-    // Lots to do here! Prevent default behavior, disable the form to avoid
-    // double submits, and POST the form data to the endpoint. On success, reset
-    // the form. You must put the success and failure messages from the server
-    // in the states you have reserved for them, and the form
-    // should be re-enabled.
+    evt.preventDefault()
+    axios.post('https://webapis.bloomtechdev.com/registration', values)
+    .then(res => {
+      setServerSuccess(res.data.message)
+    })
   }
 
   return (
