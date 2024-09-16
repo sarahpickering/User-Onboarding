@@ -20,6 +20,22 @@ const e = { // This is a dictionary of validation error messages.
   agreementOptions: 'agreement must be accepted',
 }
 
+const userSchema = yup.object().shape({
+  username: yup.string().trim()
+    .required(e.usernameRequired)
+    .min(3, e.usernameMin).max(20, e.usernameMax),
+  favLanguage: yup.string()
+    .required(e.favLanguageRequired).trim()
+    .oneOf(['javascript', 'rust'], e.favLanguageOptions),
+  favFood: yup.string()
+    .required(e.favFoodRequired).trim()
+    .oneOf(['broccoli', 'spaghetti', 'pizza'], e.favFoodOptions),
+  agreement: yup.boolean()
+    .required(e.agreementRequired)
+    .oneOf([true], e.agreementOptions),
+
+})
+
 // ✨ TASK: BUILD YOUR FORM SCHEMA HERE
 // The schema should use the error messages contained in the object above.
 const getInitialValues = () => ({
@@ -41,6 +57,11 @@ export default function App() {
   const [serverSuccess, setServerSuccess] = useState()
   const [serverFailure, setServerFailure] = useState()
   const [formEnabled, setFormEnabled] = useState(false)
+
+  useEffect(() => {
+    userSchema.isValid(values).then(setFormEnabled)
+  }, [values])
+
   // ✨ TASK: BUILD YOUR STATES HERE
   // You will need states to track (1) the form, (2) the validation errors,
   // (3) whether submit is disabled, (4) the success message from the server,
@@ -54,6 +75,10 @@ export default function App() {
     let { type, name, value, checked } = evt.target
     value = type == 'checkbox' ? checked : value
     setValues({ ...values, [name]: value })
+    yup.reach(userSchema, name).validate(value)
+      .then(() => setErrors({ ...errors, [name]: ''}))
+      .catch((err) => setErrors({ ...errors, [name]: err.errors[0] }))
+      
   }
 
   const onSubmit = evt => {
