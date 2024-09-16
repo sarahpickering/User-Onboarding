@@ -1,6 +1,8 @@
 // ❗ The ✨ TASKS inside this component are NOT IN ORDER.
 // ❗ Check the README for the appropriate sequence to follow.
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import * as yup from 'yup'
 
 const e = { // This is a dictionary of validation error messages.
   // username
@@ -20,8 +22,24 @@ const e = { // This is a dictionary of validation error messages.
 
 // ✨ TASK: BUILD YOUR FORM SCHEMA HERE
 // The schema should use the error messages contained in the object above.
+const getInitialValues = () => ({
+    username: '',
+    favLanguage: '',
+    favFood: '',
+    agreement: false,
+})
+const getInitialErrors = () => ({
+  username: '',
+    favLanguage: '',
+    favFood: '',
+    agreement: '',
+})
 
 export default function App() {
+  const [values, setValues] = useState(getInitialValues())
+  const [errors, setErrors] = useState(getInitialErrors())
+  const [serverSuccess, setServerSuccess] = useState()
+  const [serverFailure, setServerFailure] = useState()
   // ✨ TASK: BUILD YOUR STATES HERE
   // You will need states to track (1) the form, (2) the validation errors,
   // (3) whether submit is disabled, (4) the success message from the server,
@@ -51,29 +69,29 @@ export default function App() {
   return (
     <div> {/* TASK: COMPLETE THE JSX */}
       <h2>Create an Account</h2>
-      <form>
-        <h4 className="success">Success! Welcome, new user!</h4>
-        <h4 className="error">Sorry! Username is taken</h4>
+      <form onSubmit={onSubmit}>
+        { serverSuccess && <h4 className="success">{serverSuccess}</h4> }
+        { serverFailure && <h4 className="error">{serverFailure}</h4> }
 
         <div className="inputGroup">
           <label htmlFor="username">Username:</label>
-          <input id="username" name="username" type="text" placeholder="Type Username" />
-          <div className="validation">username is required</div>
+          <input value={values.username} onChange={onChange} id="username" name="username" type="text" placeholder="Type Username" />
+          { errors.username && <div className="validation">{errors.username}</div> }
         </div>
 
         <div className="inputGroup">
           <fieldset>
             <legend>Favorite Language:</legend>
             <label>
-              <input type="radio" name="favLanguage" value="javascript" />
+              <input checked={values.favLanguage == 'javascript'} onChange={onChange} type="radio" name="favLanguage" value="javascript" />
               JavaScript
             </label>
             <label>
-              <input type="radio" name="favLanguage" value="rust" />
+              <input checked={values.favLanguage == 'rust'} type="radio" name="favLanguage" value="rust" />
               Rust
             </label>
           </fieldset>
-          <div className="validation">favLanguage is required</div>
+          { errors.favLanguage && <div className="validation">{errors.favLanguage}</div> }
         </div>
 
         <div className="inputGroup">
@@ -84,7 +102,7 @@ export default function App() {
             <option value="spaghetti">Spaghetti</option>
             <option value="broccoli">Broccoli</option>
           </select>
-          <div className="validation">favFood is required</div>
+          { errors.favFood &&<div className="validation">{errors.favFood}</div> }
         </div>
 
         <div className="inputGroup">
@@ -92,7 +110,7 @@ export default function App() {
             <input id="agreement" type="checkbox" name="agreement" />
             Agree to our terms
           </label>
-          <div className="validation">agreement is required</div>
+          { errors.agreement && <div className="validation">{errors.agreement}</div> }
         </div>
 
         <div>
